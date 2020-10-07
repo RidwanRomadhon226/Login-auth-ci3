@@ -10,54 +10,52 @@
   </a>
 
   <!-- Divider -->
-  <!-- <hr class="sidebar-divider my-0"> -->
-
-  <!-- Heading -->
-  <div class="sidebar-heading">
-    Administrator
-  </div>
-
-  <!-- Nav Item - Dashboard -->
-  <li class="nav-item">
-    <a class="nav-link" href="index.html">
-      <i class="fas fa-fw fa-tachometer-alt"></i>
-      <span>Dashboard</span></a>
-  </li>
-
-  <!-- Divider -->
   <hr class="sidebar-divider">
 
-  <!-- Heading -->
-  <div class="sidebar-heading">
-    User
-  </div>
 
-  <!-- Nav Item - Pages Collapse Menu -->
-  <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>Components</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="buttons.html">Buttons</a>
-            <a class="collapse-item" href="cards.html">Cards</a>
-          </div>
-        </div>
-      </li> -->
+  <?php
+  $role_id = $this->session->userdata('role_id');
+  $queryMenu = "SELECT `user_menu`.`id`, `nama_menu`
+              FROM `user_menu` JOIN  `user_access_menu`
+              ON `user_menu`.`id` = `user_access_menu`.`menu_id`
+              WHERE `user_access_menu`.`role_id` = $role_id ORDER BY `user_access_menu`.`menu_id` ASC";
+  $menu = $this->db->query($queryMenu)->result_array();
+  // var_dump($menu);
+  // die;
+  ?>
 
 
+  <!-- Looping Menu -->
+
+  <?php foreach ($menu as $m) : ?>
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+      <?= $m['nama_menu'] ?>
+    </div>
+
+    <!-- Sub menu Sesuai Menu -->
+
+    <?php
+    $menu_id = $m['id'];
+    $querySubMenu = "SELECT *
+                    FROM `user_sub_menu` JOIN `user_menu`
+                    ON `user_sub_menu` . `menu_id` = `user_menu` .`id`
+                     WHERE `user_sub_menu`.`menu_id` = $menu_id AND `user_sub_menu`.`is_active` = 1 ";
+    $subMenu = $this->db->query($querySubMenu)->result_array();
+    ?>
+
+    <?php foreach ($subMenu as $sm) : ?>
+      <li class="nav-item">
+        <a class="nav-link" href="<?= base_url($sm['url']) ?>">
+          <?= $sm['icon'] ?>
+          <span><?= $sm['title'] ?></span></a>
+      </li>
+    <?php endforeach ?>
+    <hr class="sidebar-divider">
+  <?php endforeach ?>
 
 
-  <!-- Nav Item - Charts -->
-  <li class="nav-item">
-    <a class="nav-link" href="charts.html">
-      <i class="fas fa-fw fa-user"></i>
-      <span>My Profile</span></a>
-  </li>
-
-  <hr class="sidebar-divider">
 
   <li class="nav-item">
     <a class="nav-link" href="<?= base_url('auth/logout') ?>">
