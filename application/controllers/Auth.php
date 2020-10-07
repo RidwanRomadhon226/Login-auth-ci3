@@ -42,7 +42,15 @@ class Auth extends CI_Controller
             'role_id' => $user['role_id']
           ];
           $this->session->set_userdata($data);
-          redirect('user');
+          if ($user['role_id'] == 1) {
+            # code...
+            redirect('admin');
+          }
+          if ($user['role_id'] == 2) {
+            # code...
+            redirect('user');
+          }
+          echo 'role tidak valid';
         } else {
           $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
           Password Anda Salah </div>');
